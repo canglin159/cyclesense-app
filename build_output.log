@@ -1,0 +1,179 @@
+
+> cyclesense-app@0.0.1 build
+> vite build
+
+vite v8.0.16 building ssr environment for production...
+[2Ktransforming...11:27:37 PM [vite-plugin-svelte] src/routes/+page.svelte:101:12 Visible, non-interactive element `<div>` with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+ 99: 
+100:         {#if !premiumStore.isPremium && appState.isScarcityActive}
+101:             <div class="mx-6 mb-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-[32px] text-white shadow-lg shadow-purple-100 flex items-center justify-between overflow-hidden relative group cursor-pointer" onclick={() => showPaywall = true}>
+                       ^
+102:                 <div class="relative z-10">
+103:                     <div class="flex items-center gap-2 mb-1">
+11:27:37 PM [vite-plugin-svelte] src/routes/+page.svelte:101:12 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+ 99: 
+100:         {#if !premiumStore.isPremium && appState.isScarcityActive}
+101:             <div class="mx-6 mb-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-[32px] text-white shadow-lg shadow-purple-100 flex items-center justify-between overflow-hidden relative group cursor-pointer" onclick={() => showPaywall = true}>
+                       ^
+102:                 <div class="relative z-10">
+103:                     <div class="flex items-center gap-2 mb-1">
+11:27:37 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:34:0 Visible, non-interactive element `<div>` with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+32: </script>
+33: 
+34: <div 
+         ^
+35:     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+36:     transition:fade
+11:27:37 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:34:0 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+32: </script>
+33: 
+34: <div 
+         ^
+35:     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+36:     transition:fade
+11:27:37 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:39:4 Visible, non-interactive element `<div>` with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+37:     onclick={onclose}
+38: >
+39:     <div 
+             ^
+40:         class="bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl"
+41:         transition:fly={{ y: 100 }}
+11:27:37 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:39:4 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+37:     onclick={onclose}
+38: >
+39:     <div 
+             ^
+40:         class="bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl"
+41:         transition:fly={{ y: 100 }}
+✓ 3854 modules transformed.
+rendering chunks...
+vite v8.0.16 building client environment for production...
+[2Ktransforming...11:27:42 PM [vite-plugin-svelte] src/routes/+page.svelte:101:12 Visible, non-interactive element `<div>` with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+ 99: 
+100:         {#if !premiumStore.isPremium && appState.isScarcityActive}
+101:             <div class="mx-6 mb-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-[32px] text-white shadow-lg shadow-purple-100 flex items-center justify-between overflow-hidden relative group cursor-pointer" onclick={() => showPaywall = true}>
+                       ^
+102:                 <div class="relative z-10">
+103:                     <div class="flex items-center gap-2 mb-1">
+11:27:42 PM [vite-plugin-svelte] src/routes/+page.svelte:101:12 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+ 99: 
+100:         {#if !premiumStore.isPremium && appState.isScarcityActive}
+101:             <div class="mx-6 mb-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-[32px] text-white shadow-lg shadow-purple-100 flex items-center justify-between overflow-hidden relative group cursor-pointer" onclick={() => showPaywall = true}>
+                       ^
+102:                 <div class="relative z-10">
+103:                     <div class="flex items-center gap-2 mb-1">
+11:27:42 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:34:0 Visible, non-interactive element `<div>` with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+32: </script>
+33: 
+34: <div 
+         ^
+35:     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+36:     transition:fade
+11:27:42 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:34:0 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+32: </script>
+33: 
+34: <div 
+         ^
+35:     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+36:     transition:fade
+11:27:42 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:39:4 Visible, non-interactive element `<div>` with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+37:     onclick={onclose}
+38: >
+39:     <div 
+             ^
+40:         class="bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl"
+41:         transition:fly={{ y: 100 }}
+11:27:42 PM [vite-plugin-svelte] src/lib/components/Invite.svelte:39:4 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+37:     onclick={onclose}
+38: >
+39:     <div 
+             ^
+40:         class="bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl"
+41:         transition:fly={{ y: 100 }}
+✓ 3860 modules transformed.
+rendering chunks...
+computing gzip size...
+.svelte-kit/output/client/_app/version.json                         0.02 kB │ gzip:   0.04 kB
+.svelte-kit/output/client/.vite/manifest.json                       2.94 kB │ gzip:   0.61 kB
+.svelte-kit/output/client/_app/immutable/assets/2.CvShyTXp.css      0.49 kB │ gzip:   0.27 kB
+.svelte-kit/output/client/_app/immutable/assets/0.z5GWDZR5.css     42.84 kB │ gzip:   7.88 kB
+.svelte-kit/output/client/_app/immutable/chunks/xihTtKlq.js         0.06 kB │ gzip:   0.08 kB
+.svelte-kit/output/client/_app/immutable/entry/start.CEJQWKQa.js    0.07 kB │ gzip:   0.08 kB
+.svelte-kit/output/client/_app/immutable/chunks/CWELuZEE.js         0.33 kB │ gzip:   0.18 kB
+.svelte-kit/output/client/_app/immutable/nodes/1.CPTdYB-1.js        0.37 kB │ gzip:   0.26 kB
+.svelte-kit/output/client/_app/immutable/entry/app.B2xZBix1.js      2.75 kB │ gzip:   1.26 kB
+.svelte-kit/output/client/_app/immutable/nodes/0.DqlzVjAF.js        5.39 kB │ gzip:   2.13 kB
+.svelte-kit/output/client/_app/immutable/chunks/CJMow-m0.js        26.17 kB │ gzip:  10.17 kB
+.svelte-kit/output/client/_app/immutable/chunks/DKP3dbVN.js        31.34 kB │ gzip:  11.90 kB
+.svelte-kit/output/client/_app/immutable/chunks/CuU-LhAB.js        58.53 kB │ gzip:  22.40 kB
+.svelte-kit/output/client/_app/immutable/nodes/2.BiRzvcGX.js       59.32 kB │ gzip:  16.75 kB
+.svelte-kit/output/client/_app/immutable/chunks/C8NzdLsG.js       701.37 kB │ gzip: 185.23 kB
+
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/lib/stores/referralStore.svelte.js is dynamically imported by src/lib/stores/appState.svelte.js but also statically imported by src/lib/components/Invite.svelte, src/routes/+layout.svelte, src/routes/+page.svelte, dynamic import will not move module into another chunk.
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.98s
+vite v8.0.16 building client environment for production...
+[2Ktransforming...✓ 3 modules transformed.
+rendering chunks...
+computing gzip size...
+.svelte-kit/output/client/service-worker.js  1.33 kB │ gzip: 0.61 kB
+
+✓ built in 11ms
+computing gzip size...
+.svelte-kit/output/server/.vite/manifest.json                                         4.84 kB │ gzip:  0.75 kB
+.svelte-kit/output/server/_app/immutable/assets/_page.CvShyTXp.css                    0.49 kB │ gzip:  0.27 kB
+.svelte-kit/output/server/_app/immutable/assets/_layout.CENJjVd3.css                 41.90 kB │ gzip:  7.85 kB
+.svelte-kit/output/server/chunks/referralStore2.svelte.js                             0.09 kB │ gzip:  0.08 kB
+.svelte-kit/output/server/internal.js                                                 0.40 kB │ gzip:  0.20 kB
+.svelte-kit/output/server/entries/fallbacks/error.svelte.js                           0.41 kB │ gzip:  0.26 kB
+.svelte-kit/output/server/chunks/private.js                                           0.49 kB │ gzip:  0.24 kB
+.svelte-kit/output/server/entries/endpoints/api/verify-session/_server.js             0.80 kB │ gzip:  0.44 kB
+.svelte-kit/output/server/entries/endpoints/api/create-checkout-session/_server.js    0.86 kB │ gzip:  0.51 kB
+.svelte-kit/output/server/entries/endpoints/api/stripe-webhook/_server.js             0.91 kB │ gzip:  0.51 kB
+.svelte-kit/output/server/chunks/environment.js                                       1.22 kB │ gzip:  0.51 kB
+.svelte-kit/output/server/entries/endpoints/api/referral/activate/_server.js          1.32 kB │ gzip:  0.67 kB
+.svelte-kit/output/server/chunks/index-server.js                                      4.55 kB │ gzip:  1.69 kB
+.svelte-kit/output/server/chunks/state.js                                             4.75 kB │ gzip:  1.87 kB
+.svelte-kit/output/server/entries/pages/_layout.svelte.js                             5.42 kB │ gzip:  2.03 kB
+.svelte-kit/output/server/chunks/shared.js                                           10.28 kB │ gzip:  3.33 kB
+.svelte-kit/output/server/chunks/exports.js                                          11.22 kB │ gzip:  3.50 kB
+.svelte-kit/output/server/chunks/referralStore.svelte.js                             16.06 kB │ gzip:  4.43 kB
+.svelte-kit/output/server/chunks/internal.js                                         20.69 kB │ gzip:  6.44 kB
+.svelte-kit/output/server/chunks/utils.js                                            30.98 kB │ gzip:  9.11 kB
+.svelte-kit/output/server/entries/pages/_page.svelte.js                              44.36 kB │ gzip:  9.48 kB
+.svelte-kit/output/server/remote-entry.js                                            54.59 kB │ gzip: 11.91 kB
+.svelte-kit/output/server/index.js                                                  123.12 kB │ gzip: 31.19 kB
+.svelte-kit/output/server/chunks/dev.js                                             128.86 kB │ gzip: 33.62 kB
+
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/lib/stores/referralStore.svelte.js is dynamically imported by src/lib/stores/appState.svelte.js but also statically imported by src/lib/components/Invite.svelte, src/routes/+layout.svelte, src/routes/+page.svelte, dynamic import will not move module into another chunk.
+
+[33m[PLUGIN_TIMINGS] [0mYour build spent significant time in plugins. Here is a breakdown:
+  - vite-plugin-sveltekit-guard (87%)
+  - vite-plugin-svelte:compile (6%)
+  - vite-plugin-sveltekit-virtual-modules (5%)
+See https://rolldown.rs/options/checks#plugintimings for more details.
+
+✓ built in 8.36s
+
+Run npm run preview to preview your production build locally.
+
+> Using @sveltejs/adapter-auto
+  Could not detect a supported production environment. See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
+  ✔ done
