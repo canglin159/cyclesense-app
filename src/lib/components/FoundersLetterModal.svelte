@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { X, Share2, Sparkles, Heart } from 'lucide-svelte';
+    import { X, Share2, Sparkles, Heart } from '@lucide/svelte';
     import { fade, scale } from 'svelte/transition';
 
     let { onclose, onopenshare } = $props();
