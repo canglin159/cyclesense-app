@@ -8,6 +8,7 @@
     import SettingsView from '$lib/components/Settings.svelte';
     import InviteView from '$lib/components/Invite.svelte';
     import SafeShareView from '$lib/components/SafeShare.svelte';
+    import FoundersLetterModal from '$lib/components/FoundersLetterModal.svelte';
     import { premiumStore } from '$lib/stores/premiumStore.svelte.js';
     import { referralStore } from '$lib/stores/referralStore.svelte.js';
     import { onMount } from 'svelte';
@@ -147,6 +148,7 @@
             <SafeShareView onclose={() => showSafeShare = false} />
         {/if}
 
+        <FoundersLetterModal onopenshare={() => showSafeShare = true} />
         <!-- Navigation Bar -->
         <nav class="fixed bottom-0 left-0 right-0 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] bg-transparent pointer-events-none">
             <div class="max-w-md mx-auto bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 p-2 flex items-center justify-between pointer-events-auto">

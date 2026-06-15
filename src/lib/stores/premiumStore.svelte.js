@@ -26,11 +26,6 @@ class PremiumStore {
             // Initial check
             await this.refreshStatus();
 
-            // Listen for changes
-            this.purchases.addCustomerInfoUpdateListener((info) => {
-                this.updateFromCustomerInfo(info);
-            });
-
             // Get offerings for the upgrade screen
             const offerings = await this.purchases.getOfferings();
             this.offerings = offerings.current;
