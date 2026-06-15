@@ -8,30 +8,32 @@ class PremiumStore {
     offerings = $state(null);
     loading = $state(false);
     customerInfo = $state(null);
+    purchases = null;
 
     async init() {
         if (typeof window === 'undefined') return;
-        
         this.loading = true;
         try {
             // Use API key from environment or instructions
-            const apiKey = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY || 'test_EDGjbjRieknNNBBCIpnixQkEAai'; 
+            const apiKey = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY || 'test_EDGjbjRieknNNBBCIpnixQkEAai';
             
-            // Configure RevenueCat
-            Purchases.configure(apiKey, appState.settings.userId);
-            
+            // Configure RevenueCat and store the instance
+            this.purchases = Purchases.configure({ 
+                apiKey, 
+                appUserId: appState.settings.userId 
+            });
+
             // Initial check
             await this.refreshStatus();
-            
+
             // Listen for changes
-            Purchases.addCustomerInfoUpdateListener((info) => {
+            this.purchases.addCustomerInfoUpdateListener((info) => {
                 this.updateFromCustomerInfo(info);
             });
 
             // Get offerings for the upgrade screen
-            const offerings = await Purchases.getOfferings();
+            const offerings = await this.purchases.getOfferings();
             this.offerings = offerings.current;
-            
         } catch (e) {
             console.error('Failed to initialize RevenueCat', e);
         } finally {
@@ -40,8 +42,9 @@ class PremiumStore {
     }
 
     async refreshStatus() {
+        if (!this.purchases) return;
         try {
-            const info = await Purchases.getCustomerInfo();
+            const info = await this.purchases.getCustomerInfo();
             this.updateFromCustomerInfo(info);
         } catch (e) {
             console.error('Failed to refresh customer info', e);
@@ -61,11 +64,12 @@ class PremiumStore {
     }
 
     async upgrade(priceId) {
-        // Fallback for manual Stripe flow if needed, but modern best practice 
+        if (!this.purchases) return;
+        // Fallback for manual Stripe flow if needed, but modern best practice
         // is to use RevenueCat Paywalls or makePurchase
         try {
             // If priceId is a RevenueCat Package/Product ID
-            await Purchases.purchaseProduct(priceId);
+            await this.purchases.purchaseProduct(priceId);
             await this.refreshStatus();
         } catch (e) {
             console.error('Purchase failed', e);
@@ -80,7 +84,6 @@ class PremiumStore {
                     cancelUrl: window.location.origin + '/?upgrade=cancelled'
                 })
             });
-
             const data = await response.json();
             if (data.url) {
                 window.location.href = data.url;
@@ -96,7 +99,6 @@ class PremiumStore {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId })
         });
-
         const result = await response.json();
         if (result.success) {
             await this.refreshStatus();
