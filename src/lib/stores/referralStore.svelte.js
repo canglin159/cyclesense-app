@@ -11,8 +11,34 @@ class ReferralStore {
     async init() {
         if (typeof window === 'undefined') return;
 
-        // 1. Check for ?ref= in URL
         const urlParams = new URLSearchParams(window.location.search);
+        
+        // 1. Check for ?type=lifetime (Partner Fulfillment)
+        const type = urlParams.get('type');
+        const key = urlParams.get('key');
+        if (type === 'lifetime') {
+            console.log('Partner link detected, granting lifetime access...');
+            try {
+                const response = await fetch(getApiUrl('/api/partner/fulfill'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: appState.settings.userId,
+                        type: 'lifetime',
+                        key: key
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    console.log('Lifetime access granted!');
+                    await premiumStore.refreshStatus();
+                }
+            } catch (e) {
+                console.error('Partner fulfillment failed:', e);
+            }
+        }
+
+        // 2. Check for ?ref= in URL
         const ref = urlParams.get('ref');
         
         if (ref && ref !== appState.settings.referralId) {
@@ -22,9 +48,6 @@ class ReferralStore {
         } else {
             this.referredBy = appState.settings.referredBy;
         }
-
-        // TODO: Fetch referral history/credits from a backend if we had one.
-        // For MVP, we might just rely on entitlements granted in RevenueCat.
     }
 
     async activateReferral() {

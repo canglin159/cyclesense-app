@@ -2,11 +2,18 @@ import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import crypto from 'crypto';
 
+const MAX_PAYLOAD_SIZE = 50 * 1024; // 50KB
+
 export async function POST({ request }) {
-    const { encrypted_payload, iv } = await request.json();
+    const body = await request.json();
+    const { encrypted_payload, iv } = body;
 
     if (!encrypted_payload || !iv) {
         return json({ error: 'Missing payload or IV' }, { status: 400 });
+    }
+
+    if (encrypted_payload.length > MAX_PAYLOAD_SIZE) {
+        return json({ error: 'Payload too large' }, { status: 413 });
     }
 
     const id = crypto.randomUUID();
@@ -18,6 +25,15 @@ export async function POST({ request }) {
             args: [id, encrypted_payload, iv, expires_at]
         });
 
+        // Occasional cleanup of expired shares (1% chance)
+        if (Math.random() < 0.01) {
+            console.log('[API Share] Triggering background cleanup of expired shares...');
+            db.execute({
+                sql: 'DELETE FROM shares WHERE expires_at < CURRENT_TIMESTAMP',
+                args: []
+            }).catch(err => console.error('Cleanup error:', err));
+        }
+
         return json({ id });
     } catch (err) {
         console.error('Error creating share:', err);
@@ -27,7 +43,6 @@ export async function POST({ request }) {
 
 export async function GET({ url }) {
     const id = url.searchParams.get('id');
-
     if (!id) {
         return json({ error: 'Missing ID' }, { status: 400 });
     }

@@ -1,3 +1,5 @@
+export const prerender = false;
+
 export const load = async ({ params, fetch }) => {
     const response = await fetch(`/api/share?id=${params.id}`);
     

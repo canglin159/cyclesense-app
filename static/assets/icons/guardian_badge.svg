@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Community Guardian Badge - CycleSense -->
+  <!-- Outer Shield - Primary Violet -->
+  <path d="M256 30L80 94V224C80 348 256 482 256 482C256 482 432 348 432 224V94L256 30Z" fill="#8B5CF6"/>
+  
+  <!-- Leaf Icon inside - Lavender -->
+  <path d="M256 120C256 120 180 200 180 280C180 330 214 370 256 370C298 370 332 330 332 280C332 200 256 120 256 120Z" fill="#A78BFA"/>
+  
+  <!-- Central Leaf Vein - Primary Violet -->
+  <path d="M256 120V370" stroke="#8B5CF6" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Side Veins -->
+  <path d="M256 180C256 180 230 190 210 220" stroke="#8B5CF6" stroke-width="8" stroke-linecap="round"/>
+  <path d="M256 240C256 240 282 250 302 280" stroke="#8B5CF6" stroke-width="8" stroke-linecap="round"/>
+  <path d="M256 300C256 300 230 310 210 340" stroke="#8B5CF6" stroke-width="8" stroke-linecap="round"/>
+</svg>

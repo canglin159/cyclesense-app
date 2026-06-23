@@ -4,12 +4,18 @@
     import { Sparkles, Calendar, TrendingUp, Lock, ChevronRight, Share2, ShieldCheck } from '@lucide/svelte';
     import SyncStatus from './SyncStatus.svelte';
     import { fade } from 'svelte/transition';
+    import { onMount } from 'svelte';
 
     let { onrequestupgrade, onsafeshare } = $props();
 
     function formatDate(dateStr) {
         return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     }
+
+    onMount(() => {
+        const confidence = appState.prediction?.confidence || 'unknown';
+        appState.recordEvent('prediction_viewed', { confidence });
+    });
 </script>
 
 <div class="space-y-6 pb-10">

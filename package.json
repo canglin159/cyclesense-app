@@ -34,11 +34,12 @@
         "@capacitor/cli": "^8.4.0",
         "@capacitor/core": "^8.4.0",
         "@capacitor/ios": "^8.4.0",
+        "@libsql/client": "^0.14.0",
         "@lucide/svelte": "^1.17.0",
         "@revenuecat/purchases-js": "^1.41.2",
         "@revenuecat/purchases-ui-js": "^4.7.2",
+        "dotenv": "^17.4.2",
         "stripe": "^22.2.0",
-        "vercel": "^54.9.0",
-        "@libsql/client": "^0.14.0"
+        "vercel": "^54.9.0"
     }
 }

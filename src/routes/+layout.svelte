@@ -2,6 +2,9 @@
     import './layout.css';
     import favicon from '$lib/assets/favicon.svg';
     import { onMount } from 'svelte';
+    import { page } from '$app/state';
+    import { goto } from '$app/navigation';
+    import { App } from '@capacitor/app';
     import { appState } from '$lib/stores/appState.svelte.js';
     import { premiumStore } from '$lib/stores/premiumStore.svelte.js';
     import { referralStore } from '$lib/stores/referralStore.svelte.js';
@@ -15,10 +18,44 @@
         await premiumStore.init();
         await referralStore.init();
         
+        // Handle deep links
+        App.addListener('appUrlOpen', data => {
+            console.log('App opened with URL:', data.url);
+            // data.url will be something like "io.cyclesense.app://cyclesense.app/influencer-name"
+            // or "https://cyclesense.app/influencer-name"
+            try {
+                const url = new URL(data.url);
+                const path = url.pathname;
+                if (path) {
+                    goto(path);
+                }
+            } catch (e) {
+                console.error('Failed to parse deep link URL', e);
+            }
+        });
+
+        // Verify Stripe session if returning from checkout
+        const urlParams = new URLSearchParams(window.location.search);
+        const upgradeStatus = urlParams.get('upgrade');
+        const sessionId = urlParams.get('session_id');
+
+        if (upgradeStatus === 'success' && sessionId) {
+            await premiumStore.verifyStripeSession(sessionId);
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
         // Import web components side-effect using the exported subpath
         await import('@revenuecat/purchases-ui-js/web-components');
         
         loading = false;
+    });
+
+    // Track page views
+    $effect(() => {
+        if (!loading && page.url.pathname) {
+            appState.recordEvent('page_view', { path: page.url.pathname });
+        }
     });
 </script>
 

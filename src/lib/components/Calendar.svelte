@@ -149,14 +149,20 @@
         </div>
 
         {#if appState.prediction.confidence}
-            <div class="mt-6 flex items-center gap-2 bg-blue-50 p-3 rounded-xl">
-                <Info class="w-4 h-4 text-blue-400" />
-                <p class="text-xs text-blue-700 font-medium">
-                    Prediction confidence: <span class="capitalize font-bold">{appState.prediction.confidence}</span>
-                </p>
+            <div class="mt-6 flex items-center justify-between gap-2 bg-blue-50 p-3 rounded-xl">
+                <div class="flex items-center gap-2">
+                    <Info class="w-4 h-4 text-blue-400" />
+                    <p class="text-xs text-blue-700 font-medium">
+                        Prediction confidence: <span class="capitalize font-bold">{appState.prediction.confidence}</span>
+                    </p>
+                </div>
+                {#if appState.featureFlags.bayesianModel}
+                    <div class="flex items-center gap-1 bg-white/50 px-2 py-0.5 rounded-full border border-blue-100">
+                        <span class="text-[8px] font-black text-blue-500 uppercase tracking-tighter">Sovereignty Engine</span>
+                    </div>
+                {/if}
             </div>
         {/if}
-
         <div class="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
             <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-300">
                 <ShieldCheck class="w-3 h-3" /> Zero Knowledge Share

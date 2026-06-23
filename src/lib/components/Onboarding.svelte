@@ -1,10 +1,18 @@
 <script>
     import { appState } from '$lib/stores/appState.svelte.js';
-    import { Heart, ArrowRight } from '@lucide/svelte';
+    import { Heart, ArrowRight, Smartphone, Download } from '@lucide/svelte';
+    import InstallApp from './InstallApp.svelte';
 
     let lastPeriodStart = $state('');
     let periodLength = $state(5);
     let step = $state(1);
+    let showInstallApp = $state(false);
+    let isStandalone = $state(false);
+
+    import { onMount } from 'svelte';
+    onMount(() => {
+        isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    });
 
     async function handleNext() {
         if (step === 1) {
@@ -76,7 +84,24 @@
             <div class="w-2 h-2 rounded-full {step === 1 ? 'bg-purple-600 w-6' : 'bg-purple-200'} transition-all duration-300"></div>
             <div class="w-2 h-2 rounded-full {step === 2 ? 'bg-purple-600 w-6' : 'bg-purple-200'} transition-all duration-300"></div>
         </div>
+
+        {#if !isStandalone}
+            <div class="mt-12 pt-8 border-t border-gray-100 w-full flex flex-col items-center">
+                <button 
+                    onclick={() => showInstallApp = true}
+                    class="flex items-center gap-2 text-purple-600 font-bold hover:text-purple-700 transition-colors"
+                >
+                    <Smartphone class="w-5 h-5" />
+                    Install App for Mobile
+                </button>
+                <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-widest font-black">Native Experience • Privacy-First</p>
+            </div>
+        {/if}
     </div>
+
+    {#if showInstallApp}
+        <InstallApp onclose={() => showInstallApp = false} />
+    {/if}
 </div>
 
 <style>

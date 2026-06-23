@@ -3,7 +3,8 @@ import { appState } from './appState.svelte.js';
 import { getApiUrl } from '../config.js';
 
 class PremiumStore {
-    isPremium = $state(false);
+    subscriptionActive = $state(false);
+    isPremium = $derived(this.subscriptionActive || appState.isPremium);
     entitlements = $state([]);
     offerings = $state(null);
     loading = $state(false);
@@ -50,10 +51,10 @@ class PremiumStore {
         this.customerInfo = info;
         // The task specifies "Cyclesense Pro" as the entitlement to check
         if (info.entitlements.active['Cyclesense Pro'] || info.entitlements.active['premium']) {
-            this.isPremium = true;
+            this.subscriptionActive = true;
             this.entitlements = Object.keys(info.entitlements.active);
         } else {
-            this.isPremium = false;
+            this.subscriptionActive = false;
             this.entitlements = [];
         }
     }

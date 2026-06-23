@@ -1,0 +1,8 @@
+# Production Signing Properties Template
+# Copy this file to 'release-signing.properties' and fill in the values.
+# DO NOT commit the actual properties file to version control.
+
+STORE_FILE=release-key.jks
+STORE_PASSWORD=your_keystore_password
+KEY_ALIAS=your_key_alias
+KEY_PASSWORD=your_key_password
