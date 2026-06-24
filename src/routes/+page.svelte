@@ -7,7 +7,7 @@
     import { 
         Plus, Calendar as CalendarIcon, History as HistoryIcon, 
         LayoutGrid, Settings, Share2, Sparkles, Gift, BookOpen, Heart,
-        ChevronRight, Smartphone
+        Smartphone, ChevronRight
     } from '@lucide/svelte';
 
     // Components
@@ -68,11 +68,14 @@
     <div class="min-h-screen bg-white pb-32 font-sans">
         <!-- Header -->
         <header class="flex items-center justify-between px-6 pt-12 pb-4">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200">
                     <Heart class="w-5 h-5 text-white fill-white" />
                 </div>
-                <h1 class="text-xl font-black text-gray-900 tracking-tight">CycleSense</h1>
+                <div>
+                    <h1 class="text-xl font-black text-gray-900 tracking-tight">CycleSense</h1>
+                    <p class="text-[9px] font-bold uppercase tracking-wider text-purple-400">Independent · Private · Local-First</p>
+                </div>
             </div>
             <div class="flex items-center gap-2">
                 <button 
@@ -91,29 +94,39 @@
         </header>
 
         {#if !isStandalone}
-            <div class="mx-6 mb-6 p-4 bg-white rounded-[32px] border-2 border-dashed border-purple-200 flex items-center justify-between cursor-pointer group hover:border-purple-400 transition-all" onclick={() => showInstallApp = true}>
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
-                        <Smartphone class="w-6 h-6" />
+            <div class="mx-6 mb-6 p-6 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[32px] shadow-lg text-white overflow-hidden relative group cursor-pointer transition-transform active:scale-[0.98]" onclick={() => showInstallApp = true}>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center">
+                                <Smartphone class="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-black tracking-tight">Install CycleSense</h3>
+                                <p class="text-[10px] text-purple-100 font-medium">Get the full experience</p>
+                            </div>
+                        </div>
+                        <ChevronRight class="w-5 h-5 text-white/50 group-hover:translate-x-1 transition-transform" />
                     </div>
-                    <div>
-                        <h3 class="text-sm font-black text-gray-900">Install CycleSense</h3>
-                        <p class="text-xs text-gray-500 font-medium">Add to home screen for the full experience</p>
-                    </div>
+                    <p class="text-xs text-purple-50/80 leading-relaxed">
+                        Add to home screen for better performance and enhanced privacy.
+                    </p>
                 </div>
-                <ChevronRight class="w-5 h-5 text-gray-300 group-hover:text-purple-600 transition-colors" />
+                <!-- Decorative blobs -->
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="absolute -left-6 -bottom-6 w-24 h-24 bg-indigo-400/20 rounded-full blur-2xl group-hover:translate-x-4 transition-transform duration-700"></div>
             </div>
         {/if}
 
         {#if !premiumStore.isPremium && appState.cycles.length === 1}
-            <!-- First Cycle Reward -->
+            <!-- Support the Mission -->
             <div class="mx-6 mb-6 p-5 bg-purple-600 rounded-[32px] text-white shadow-xl shadow-purple-100 flex items-center justify-between relative overflow-hidden group cursor-pointer" onclick={() => showPaywall = true}>
                 <div class="relative z-10">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="bg-white/20 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full text-purple-200">Special Gift</span>
+                        <span class="bg-white/20 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full text-purple-200">Help Us Stay Independent</span>
                     </div>
-                    <h3 class="text-lg font-black leading-tight">1 Month Pro Waiting</h3>
-                    <p class="text-xs text-purple-200 font-medium">Log your first cycle to unlock your free month.</p>
+                    <h3 class="text-lg font-black leading-tight">Gold Key Founders Price</h3>
+                    <p class="text-xs text-purple-200 font-medium">Support our privacy-first mission — $19.99/yr forever.</p>
                 </div>
                 <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-md z-10">
                     <Gift class="w-6 h-6 text-purple-200" />
@@ -125,11 +138,11 @@
             <div class="mx-6 mb-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-[32px] text-white shadow-lg shadow-purple-100 flex items-center justify-between overflow-hidden relative group cursor-pointer" onclick={() => showPaywall = true}>
                 <div class="relative z-10">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="bg-white/20 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Limited Offer</span>
-                        <span class="text-[10px] font-medium text-purple-100 italic">Only {10000 - appState.userCount} Gold Keys left!</span>
+                        <span class="bg-white/20 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Independent Launch</span>
+                        <span class="text-[10px] font-medium text-purple-100 italic">{appState.goldKeysRemaining} Gold Keys left!</span>
                     </div>
-                    <h3 class="text-lg font-black leading-tight">Gold Key Member</h3>
-                    <p class="text-xs text-purple-100 font-medium">Unlock Premium for just $19.99/year forever.</p>
+                    <h3 class="text-lg font-black leading-tight">Fund Our Native Launch</h3>
+                    <p class="text-xs text-purple-100 font-medium">Gold Key purchases ($19.99/yr) go directly toward Apple + Google store fees ($124 goal).</p>
                 </div>
                 <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-md z-10 group-hover:scale-110 transition-transform">
                     <Sparkles class="w-6 h-6 text-white fill-white" />

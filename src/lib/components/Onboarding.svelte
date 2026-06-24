@@ -85,19 +85,38 @@
             <div class="w-2 h-2 rounded-full {step === 2 ? 'bg-purple-600 w-6' : 'bg-purple-200'} transition-all duration-300"></div>
         </div>
 
-        {#if !isStandalone}
-            <div class="mt-12 pt-8 border-t border-gray-100 w-full flex flex-col items-center">
-                <button 
-                    onclick={() => showInstallApp = true}
-                    class="flex items-center gap-2 text-purple-600 font-bold hover:text-purple-700 transition-colors"
-                >
-                    <Smartphone class="w-5 h-5" />
-                    Install App for Mobile
-                </button>
-                <p class="text-[10px] text-gray-400 mt-2 uppercase tracking-widest font-black">Native Experience • Privacy-First</p>
-            </div>
-        {/if}
     </div>
+
+    {#if !isStandalone}
+        <div class="max-w-md w-full mt-8 p-8 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl shadow-xl text-white overflow-hidden relative group cursor-pointer transition-transform active:scale-[0.98]" onclick={() => showInstallApp = true}>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+                        <Smartphone class="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black tracking-tight">Install CycleSense</h2>
+                        <p class="text-purple-100 text-xs font-medium">Get the full native experience</p>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-purple-50/80 mb-6 leading-relaxed">
+                    Add CycleSense to your home screen for instant access, better performance, and enhanced privacy.
+                </p>
+
+                <div class="flex items-center gap-2 font-bold text-sm bg-white text-purple-600 px-6 py-3 rounded-2xl w-fit shadow-lg shadow-purple-900/20">
+                    <Download class="w-4 h-4" />
+                    Install Now
+                </div>
+            </div>
+
+            <!-- Decorative blobs -->
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+            <div class="absolute -left-8 -bottom-8 w-32 h-32 bg-indigo-400/20 rounded-full blur-3xl group-hover:translate-x-4 transition-transform duration-700"></div>
+        </div>
+        
+        <p class="mt-6 text-[10px] text-gray-400 uppercase tracking-widest font-black">Privacy-First • No Accounts • No Tracking</p>
+    {/if}
 
     {#if showInstallApp}
         <InstallApp onclose={() => showInstallApp = false} />

@@ -18,8 +18,8 @@
         "Exclusive 'Gold Key' Badge"
     ];
 
-    const foundingPriceId = "price_1TltDoAtAUhqLR0QVVkNxXC3";
-    const monthlyPriceId = "price_1Tf53bAtAUhqLR0QqUwsNhNQ";
+    const foundingPriceId = "price_1TltDoAtAUhqLR0QVVkNxXC3"; // $19.99/yr
+    const monthlyPriceId = "price_1Tf53bAtAUhqLR0QqUwsNhNQ"; // $9.99/mo
 
     async function handleUpgrade(packageId) {
         loading = true;
@@ -56,11 +56,11 @@
         {#if appState.isScarcityActive}
             <div class="bg-indigo-600 p-4 text-center relative overflow-hidden shrink-0">
                 <div class="relative z-10">
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-200 mb-1">Exclusive Opportunity</p>
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-200 mb-1">Support Our Independent Launch</p>
                     <h2 class="text-white font-black text-xl flex items-center justify-center gap-2">
-                        Gold Key Member <Star class="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        Gold Key Founder <Star class="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     </h2>
-                    <p class="text-indigo-100 text-xs mt-1">Special $19.99/yr price for the first 10,000 users</p>
+                    <p class="text-indigo-100 text-xs mt-1">Help us reach our $124 store funding goal. Gold Key purchases go directly toward Apple ($99) + Google ($25) developer fees.</p>
                 </div>
                 <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
                 <div class="absolute -left-8 -top-8 w-32 h-32 bg-indigo-400/20 rounded-full blur-3xl"></div>
@@ -87,14 +87,14 @@
                                 class="w-full p-6 rounded-[32px] border-2 border-indigo-600 bg-indigo-50/50 flex flex-col items-start gap-1 relative overflow-hidden group transition-all hover:bg-indigo-50"
                             >
                                 <div class="flex justify-between w-full items-center">
-                                    <span class="font-black text-indigo-600 text-lg">Gold Key</span>
-                                    <span class="bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase">Best Value</span>
+                                    <span class="font-black text-indigo-600 text-lg">Gold Key Founder</span>
+                                    <span class="bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase">Fund the Launch</span>
                                 </div>
                                 <div class="flex items-baseline gap-1">
                                     <span class="text-2xl font-black text-gray-900">$19.99</span>
                                     <span class="text-gray-400 text-sm font-medium">/ year</span>
                                 </div>
-                                <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mt-2">Locked-in price forever</p>
+                                <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mt-2">Goes toward App Store + Play Store fees</p>
                             </button>
                         {/if}
 
