@@ -18,7 +18,8 @@
         "Exclusive 'Gold Key' Badge"
     ];
 
-    const foundingPriceId = "price_1Tf53dAtAUhqLR0QC2xwA3vS";
+    const foundingPriceId = "price_1TltDoAtAUhqLR0QVVkNxXC3";
+    const monthlyPriceId = "price_1Tf53bAtAUhqLR0QqUwsNhNQ";
 
     async function handleUpgrade(packageId) {
         loading = true;
@@ -98,7 +99,7 @@
                         {/if}
 
                         <button 
-                            onclick={() => handleUpgrade('price_standard_monthly')}
+                            onclick={() => handleUpgrade(monthlyPriceId)}
                             disabled={loading}
                             class="w-full p-6 rounded-[32px] border-2 border-gray-100 bg-gray-50/50 flex flex-col items-start gap-1 transition-all hover:border-purple-200 hover:bg-purple-50/30"
                         >
