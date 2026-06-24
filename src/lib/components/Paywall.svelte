@@ -7,7 +7,7 @@
     let { onclose } = $props();
     let loading = $state(false);
     let error = $state(null);
-    let useFallback = $state(false);
+    let useFallback = $state(true); // Default to custom UI for Independent Web Launch
 
     const features = [
         "6-Month cycle forecasting",
@@ -53,19 +53,18 @@
             <X class="w-5 h-5" />
         </button>
 
-        {#if appState.isScarcityActive}
-            <div class="bg-indigo-600 p-4 text-center relative overflow-hidden shrink-0">
-                <div class="relative z-10">
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-200 mb-1">Support Our Independent Launch</p>
-                    <h2 class="text-white font-black text-xl flex items-center justify-center gap-2">
-                        Gold Key Founder <Star class="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    </h2>
-                    <p class="text-indigo-100 text-xs mt-1">Help us reach our $124 store funding goal. Gold Key purchases go directly toward Apple ($99) + Google ($25) developer fees.</p>
-                </div>
-                <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-                <div class="absolute -left-8 -top-8 w-32 h-32 bg-indigo-400/20 rounded-full blur-3xl"></div>
+        <!-- Mission Header (Always show for Independent Web Launch) -->
+        <div class="bg-indigo-600 p-4 text-center relative overflow-hidden shrink-0">
+            <div class="relative z-10">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-200 mb-1">Support Our Independent Launch</p>
+                <h2 class="text-white font-black text-xl flex items-center justify-center gap-2">
+                    Gold Key Founder <Star class="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                </h2>
+                <p class="text-indigo-100 text-xs mt-1">Help us reach our $124 store funding goal. Gold Key purchases go directly toward Apple ($99) + Google ($25) developer fees.</p>
             </div>
-        {/if}
+            <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+            <div class="absolute -left-8 -top-8 w-32 h-32 bg-indigo-400/20 rounded-full blur-3xl"></div>
+        </div>
 
         <div class="flex-1 overflow-y-auto">
             {#if useFallback}

@@ -44,6 +44,7 @@ class AppState {
     });
 
     isScarcityActive = $derived(this.userCount < 10000);
+    goldKeysRemaining = $derived(Math.max(0, 10000 - this.userCount));
     prediction = $derived(predictNextCycle(this.cycles, this.settings));
     forecast = $derived(predictForecast(this.cycles, this.settings));
 
