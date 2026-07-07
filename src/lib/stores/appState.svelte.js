@@ -47,6 +47,17 @@ class AppState {
     prediction = $derived(predictNextCycle(this.cycles, this.settings));
     forecast = $derived(predictForecast(this.cycles, this.settings));
 
+    /** Days since the last period started — used to detect cycle completion */
+    daysSinceLastPeriod = $derived.by(() => {
+        if (!this.settings.lastPeriodStart) return 0;
+        const lastStart = new Date(this.settings.lastPeriodStart);
+        const today = new Date();
+        return Math.floor((today - lastStart) / (1000 * 60 * 60 * 24));
+    });
+
+    /** True when at least one full cycle has been logged and ~28+ days have passed */
+    isCycleComplete = $derived(this.cycles.length >= 1 && this.daysSinceLastPeriod >= 25);
+
     async init() {
         try {
             const storedSettings = await getAll(STORES.SETTINGS);
@@ -74,6 +85,37 @@ class AppState {
             });
 
             this.predictions = await getAll(STORES.PREDICTIONS);
+
+            // UTM Capture & Attribution Record
+            if (typeof window !== 'undefined') {
+                const urlParams = new URLSearchParams(window.location.search);
+                const utmSource = urlParams.get('utm_source');
+                const utmMedium = urlParams.get('utm_medium');
+                const utmCampaign = urlParams.get('utm_campaign');
+
+                if (utmSource || utmMedium || utmCampaign) {
+                    console.log('UTM parameters detected:', { utmSource, utmMedium, utmCampaign });
+                    
+                    try {
+                        const payload = {
+                            userId: this.settings.userId,
+                            source: utmSource === 'brave' ? 'influencer' : 'organic', 
+                            sourceDetail: utmSource === 'brave' ? 'Brave Ads' : (utmSource || 'direct'),
+                            utmSource,
+                            utmMedium,
+                            utmCampaign
+                        };
+
+                        await fetch('/api/attribution/record', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                    } catch (e) {
+                        console.error('Failed to record UTM attribution', e);
+                    }
+                }
+            }
         } catch (e) {
             console.error('Failed to initialize app state', e);
         }
