@@ -62,7 +62,10 @@
     }
 </script>
 
-{#if !appState.settings.onboarded}
+{#if !premiumStore.isPremium}
+    <!-- Mandatory Paywall — user must purchase to proceed -->
+    <Paywall onclose={() => {}} dismissable={false} />
+{:else if !appState.settings.onboarded}
     <Onboarding />
 {:else}
     <div class="min-h-screen bg-white pb-32 font-sans">
@@ -118,23 +121,7 @@
             </div>
         {/if}
 
-        {#if !premiumStore.isPremium && appState.cycles.length === 1}
-            <!-- Support the Mission -->
-            <div class="mx-6 mb-6 p-5 bg-purple-600 rounded-[32px] text-white shadow-xl shadow-purple-100 flex items-center justify-between relative overflow-hidden group cursor-pointer" onclick={() => showPaywall = true}>
-                <div class="relative z-10">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="bg-white/20 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full text-purple-200">Help Us Stay Independent</span>
-                    </div>
-                    <h3 class="text-lg font-black leading-tight">Gold Key Founders Price</h3>
-                    <p class="text-xs text-purple-200 font-medium">Support our privacy-first mission — $19.99/yr forever.</p>
-                </div>
-                <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-md z-10">
-                    <Gift class="w-6 h-6 text-purple-200" />
-                </div>
-            </div>
-        {/if}
-
-        {#if !premiumStore.isPremium && appState.isScarcityActive}
+                    {#if !premiumStore.isPremium && appState.isScarcityActive}
             <div class="mx-6 mb-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-[32px] text-white shadow-lg shadow-purple-100 flex items-center justify-between overflow-hidden relative group cursor-pointer" onclick={() => showPaywall = true}>
                 <div class="relative z-10">
                     <div class="flex items-center gap-2 mb-1">

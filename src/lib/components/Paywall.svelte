@@ -4,7 +4,7 @@
     import { Sparkles, Check, Loader2, X, ShieldCheck, Zap, Star } from '@lucide/svelte';
     import { fade, scale, slide } from 'svelte/transition';
 
-    let { onclose } = $props();
+    let { onclose, dismissable = true } = $props();
     let loading = $state(false);
     let error = $state(null);
     let useFallback = $state(true); // Default to custom UI for Independent Web Launch
@@ -18,8 +18,8 @@
         "Exclusive 'Gold Key' Badge"
     ];
 
-    const foundingPriceId = "price_1TltDoAtAUhqLR0QVVkNxXC3"; // $19.99/yr
-    const monthlyPriceId = "price_1Tf53bAtAUhqLR0QqUwsNhNQ"; // $9.99/mo
+    const foundingPriceId = "price_1ThY1aDtRCm4HrD9p8g0SkQG"; // $19.99/yr
+    const monthlyPriceId = "price_1ThY1aDtRCm4HrD9pGlhhtFn"; // $9.99/mo
 
     async function handleUpgrade(packageId) {
         loading = true;
@@ -27,6 +27,10 @@
         try {
             await premiumStore.upgrade(packageId);
             onclose();
+            // For mandatory paywall, reload to reflect premium status
+            if (!dismissable) {
+                window.location.reload();
+            }
         } catch (e) {
             error = e.message;
             loading = false;
@@ -46,12 +50,14 @@
         transition:scale={{ start: 0.9, duration: 300 }}
     >
         <!-- Close Button -->
+        {#if dismissable}
         <button 
             onclick={onclose}
             class="absolute top-6 right-6 p-2 bg-gray-100/50 backdrop-blur-md rounded-full text-gray-500 hover:text-gray-700 transition-colors z-[120]"
         >
             <X class="w-5 h-5" />
         </button>
+        {/if}
 
         <!-- Mission Header (Always show for Independent Web Launch) -->
         <div class="bg-indigo-600 p-4 text-center relative overflow-hidden shrink-0">
@@ -130,6 +136,7 @@
                         </p>
                     {/if}
 
+                    {#if dismissable}
                     <div class="pt-4 text-center">
                         <button 
                             class="text-xs text-gray-400 font-bold hover:text-gray-600 underline"
@@ -138,6 +145,7 @@
                             Not right now
                         </button>
                     </div>
+                {/if}
                 </div>
             {:else}
                 <div class="w-full h-full min-h-[600px] flex flex-col">
