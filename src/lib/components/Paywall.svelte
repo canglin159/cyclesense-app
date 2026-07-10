@@ -37,6 +37,15 @@
         }
     }
 
+    function handleGoldKeyPurchase() {
+        // Direct Stripe Payment Link — bypasses server-side API key issue
+        window.location.href = 'https://buy.stripe.com/4gM00jg3f3OxeFk2to0ZW07';
+    }
+
+    function handleMonthlyPurchase() {
+        window.location.href = 'https://buy.stripe.com/7sYaEX4kxfxf7cS3xs0ZW08';
+    }
+
     // Attempt to detect if rc-paywall failed to load or is not supported
     // In a real app, you might listen for an error event from the custom element
 </script>
@@ -87,7 +96,7 @@
                     <div class="space-y-4">
                         {#if appState.isScarcityActive}
                             <button 
-                                onclick={() => handleUpgrade(foundingPriceId)}
+                                onclick={() => handleGoldKeyPurchase()}
                                 disabled={loading}
                                 class="w-full p-6 rounded-[32px] border-2 border-indigo-600 bg-indigo-50/50 flex flex-col items-start gap-1 relative overflow-hidden group transition-all hover:bg-indigo-50"
                             >
@@ -104,7 +113,7 @@
                         {/if}
 
                         <button 
-                            onclick={() => handleUpgrade(monthlyPriceId)}
+                            onclick={() => handleMonthlyPurchase()}
                             disabled={loading}
                             class="w-full p-6 rounded-[32px] border-2 border-gray-100 bg-gray-50/50 flex flex-col items-start gap-1 transition-all hover:border-purple-200 hover:bg-purple-50/30"
                         >
