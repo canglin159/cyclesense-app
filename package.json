@@ -31,8 +31,9 @@
     },
     "dependencies": {
         "@capacitor/android": "^8.4.0",
+        "@capacitor/app": "^8.1.0",
         "@capacitor/cli": "^8.4.0",
-        "@capacitor/core": "^8.4.0",
+        "@capacitor/core": "^8.4.1",
         "@capacitor/ios": "^8.4.0",
         "@libsql/client": "^0.14.0",
         "@lucide/svelte": "^1.17.0",
