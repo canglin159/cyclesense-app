@@ -1,13 +1,18 @@
 <script>
     import { premiumStore } from '$lib/stores/premiumStore.svelte.js';
     import { appState } from '$lib/stores/appState.svelte.js';
-    import { Sparkles, Check, Loader2, X, ShieldCheck, Zap, Star } from '@lucide/svelte';
+    import { Sparkles, Check, Loader2, X, ShieldCheck, Zap, Star, Ticket } from '@lucide/svelte';
     import { fade, scale, slide } from 'svelte/transition';
 
     let { onclose, dismissable = true } = $props();
     let loading = $state(false);
     let error = $state(null);
-    let useFallback = $state(true); // Default to custom UI for Independent Web Launch
+    let useFallback = $state(true);
+    let promoCode = $state('');
+    let promoLoading = $state(false);
+    let promoError = $state('');
+    let promoSuccess = $state('');
+    let showPromoInput = $state(false);
 
     const features = [
         "6-Month cycle forecasting",
@@ -18,36 +23,70 @@
         "Exclusive 'Gold Key' Badge"
     ];
 
-    const foundingPriceId = "price_1ThY1aDtRCm4HrD9p8g0SkQG"; // $19.99/yr
-    const monthlyPriceId = "price_1ThY1aDtRCm4HrD9pGlhhtFn"; // $9.99/mo
+    // Valid promo code ranges: CS-GOLD-001 to CS-GOLD-290
+    // Community codes for Matrix outreach: CS-GOLD-221 to CS-GOLD-280
+    // All codes grant 1 year of premium access from redemption date
+    const VALID_CODE_PREFIX = 'CS-GOLD-';
 
-    async function handleUpgrade(packageId) {
-        loading = true;
-        error = null;
+    function isCodeValid(code) {
+        const trimmed = code.trim().toUpperCase();
+        if (!trimmed.startsWith(VALID_CODE_PREFIX)) return false;
+        const numStr = trimmed.replace(VALID_CODE_PREFIX, '');
+        const num = parseInt(numStr, 10);
+        if (isNaN(num)) return false;
+        return num >= 1 && num <= 290;
+    }
+
+    async function handlePromoRedemption() {
+        promoError = '';
+        promoSuccess = '';
+        
+        if (!promoCode.trim()) {
+            promoError = 'Please enter a promo code';
+            return;
+        }
+
+        if (!isCodeValid(promoCode)) {
+            promoError = 'Invalid promo code. Valid format: CS-GOLD-XXX (001-290)';
+            return;
+        }
+
+        promoLoading = true;
         try {
-            await premiumStore.upgrade(packageId);
-            onclose();
-            // For mandatory paywall, reload to reflect premium status
-            if (!dismissable) {
-                window.location.reload();
-            }
+            // Set goldKey with 1 year expiry from now
+            const expiresAt = new Date();
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+            
+            await appState.updateSetting('goldKey', {
+                code: promoCode.trim().toUpperCase(),
+                expiresAt: expiresAt.toISOString(),
+                redeemedAt: new Date().toISOString()
+            });
+            
+            promoSuccess = 'Gold Key activated! You now have premium access for 1 year.';
+            
+            // Reload to unlock the app after a brief delay
+            setTimeout(() => {
+                if (!dismissable) {
+                    window.location.reload();
+                } else {
+                    onclose();
+                }
+            }, 1500);
         } catch (e) {
-            error = e.message;
-            loading = false;
+            promoError = 'Failed to redeem code. Please try again.';
+        } finally {
+            promoLoading = false;
         }
     }
 
     function handleGoldKeyPurchase() {
-        // Direct Stripe Payment Link — bypasses server-side API key issue
         window.location.href = 'https://buy.stripe.com/4gM00jg3f3OxeFk2to0ZW07';
     }
 
     function handleMonthlyPurchase() {
         window.location.href = 'https://buy.stripe.com/7sYaEX4kxfxf7cS3xs0ZW08';
     }
-
-    // Attempt to detect if rc-paywall failed to load or is not supported
-    // In a real app, you might listen for an error event from the custom element
 </script>
 
 <div 
@@ -123,6 +162,58 @@
                                 <span class="text-gray-400 text-sm font-medium">/ month</span>
                             </div>
                         </button>
+                    </div>
+
+                    <!-- Promo Code Section -->
+                    <div class="border-t border-gray-100 pt-4">
+                        {#if !showPromoInput}
+                            <button 
+                                onclick={() => showPromoInput = true}
+                                class="w-full text-center text-xs text-purple-500 font-bold hover:text-purple-700 transition-colors"
+                            >
+                                <Ticket class="w-3 h-3 inline mr-1" />Have a promo code? Click to redeem
+                            </button>
+                        {:else}
+                            <div class="space-y-3 bg-purple-50/50 rounded-[24px] p-4" transition:slide>
+                                <h4 class="text-xs font-black uppercase tracking-widest text-purple-400">Redeem Gold Key Code</h4>
+                                <div class="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        bind:value={promoCode}
+                                        placeholder="e.g. CS-GOLD-221"
+                                        class="flex-1 px-4 py-3 rounded-2xl border-2 border-purple-200 bg-white text-sm font-medium text-gray-900 placeholder-gray-300 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
+                                        disabled={promoLoading}
+                                    />
+                                    <button 
+                                        onclick={handlePromoRedemption}
+                                        disabled={promoLoading}
+                                        class="px-5 py-3 bg-purple-600 text-white font-bold text-sm rounded-2xl hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                    >
+                                        {#if promoLoading}
+                                            <Loader2 class="w-4 h-4 animate-spin" />
+                                        {:else}
+                                            Redeem
+                                        {/if}
+                                    </button>
+                                </div>
+                                {#if promoError}
+                                    <p class="text-red-500 text-xs font-bold bg-red-50 p-2 rounded-xl" transition:slide>
+                                        {promoError}
+                                    </p>
+                                {/if}
+                                {#if promoSuccess}
+                                    <p class="text-green-600 text-xs font-bold bg-green-50 p-2 rounded-xl" transition:slide>
+                                        {promoSuccess}
+                                    </p>
+                                {/if}
+                                <button 
+                                    onclick={() => { showPromoInput = false; promoError = ''; promoSuccess = ''; }}
+                                    class="text-[10px] text-gray-400 font-bold hover:text-gray-600 underline"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        {/if}
                     </div>
 
                     <div class="space-y-4 bg-gray-50 rounded-[32px] p-6">

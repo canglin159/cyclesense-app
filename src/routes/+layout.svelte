@@ -21,8 +21,6 @@
         // Handle deep links
         App.addListener('appUrlOpen', data => {
             console.log('App opened with URL:', data.url);
-            // data.url will be something like "io.cyclesense.app://cyclesense.app/influencer-name"
-            // or "https://cyclesense.app/influencer-name"
             try {
                 const url = new URL(data.url);
                 const path = url.pathname;
@@ -41,8 +39,31 @@
 
         if (upgradeStatus === 'success' && sessionId) {
             await premiumStore.verifyStripeSession(sessionId);
-            // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Handle promo code redemption via ?code=CS-GOLD-XXX in URL
+        const promoCodeParam = urlParams.get('code');
+        if (promoCodeParam) {
+            const code = promoCodeParam.trim().toUpperCase();
+            const codePrefix = 'CS-GOLD-';
+            if (code.startsWith(codePrefix)) {
+                const numStr = code.replace(codePrefix, '');
+                const num = parseInt(numStr, 10);
+                if (!isNaN(num) && num >= 1 && num <= 290) {
+                    console.log('Promo code detected via URL:', code);
+                    const expiresAt = new Date();
+                    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+                    await appState.updateSetting('goldKey', {
+                        code,
+                        expiresAt: expiresAt.toISOString(),
+                        redeemedAt: new Date().toISOString()
+                    });
+                    console.log('Gold Key activated via URL promo code');
+                    // Clean up URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
         }
         
         // Import web components side-effect using the exported subpath
