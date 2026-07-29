@@ -37,6 +37,7 @@
         "@capacitor/ios": "^8.4.0",
         "@libsql/client": "^0.14.0",
         "@lucide/svelte": "^1.17.0",
+        "@revenuecat/purchases-capacitor-ui": "^13.2.2",
         "@revenuecat/purchases-js": "^1.41.2",
         "@revenuecat/purchases-ui-js": "^4.7.2",
         "dotenv": "^17.4.2",

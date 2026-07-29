@@ -2,6 +2,7 @@
     import './layout.css';
     import favicon from '$lib/assets/favicon.svg';
     import { onMount } from 'svelte';
+    import { fly } from 'svelte/transition';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
     import { App } from '@capacitor/app';
@@ -12,6 +13,7 @@
 
     let { children } = $props();
     let loading = $state(true);
+    let promoBanner = $state(null); // null | { message: string, type: 'success' | 'error' }
 
     onMount(async () => {
         await appState.init();
@@ -21,8 +23,6 @@
         // Handle deep links
         App.addListener('appUrlOpen', data => {
             console.log('App opened with URL:', data.url);
-            // data.url will be something like "io.cyclesense.app://cyclesense.app/influencer-name"
-            // or "https://cyclesense.app/influencer-name"
             try {
                 const url = new URL(data.url);
                 const path = url.pathname;
@@ -41,8 +41,37 @@
 
         if (upgradeStatus === 'success' && sessionId) {
             await premiumStore.verifyStripeSession(sessionId);
-            // Clean up URL
             window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Handle promo code redemption via ?code=CS-GOLD-XXX in URL
+        const promoCodeParam = urlParams.get('code');
+        if (promoCodeParam) {
+            const code = promoCodeParam.trim().toUpperCase();
+            const codePrefix = 'CS-GOLD-';
+            if (code.startsWith(codePrefix)) {
+                const numStr = code.replace(codePrefix, '');
+                const num = parseInt(numStr, 10);
+                if (!isNaN(num) && num >= 1 && num <= 290) {
+                    const expiresAt = new Date();
+                    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+                    await appState.updateSetting('goldKey', {
+                        code,
+                        expiresAt: expiresAt.toISOString(),
+                        redeemedAt: new Date().toISOString()
+                    });
+                    await premiumStore.refreshStatus();
+                    // Show success banner
+                    promoBanner = {
+                        message: '🎉 Gold Key activated! Your annual premium membership is covered.',
+                        type: 'success'
+                    };
+                    // Clean up URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    // Auto-hide banner after 8 seconds
+                    setTimeout(() => { promoBanner = null; }, 8000);
+                }
+            }
         }
         
         // Import web components side-effect using the exported subpath
@@ -121,5 +150,12 @@
         <div class="w-12 h-12 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin"></div>
     </div>
 {:else}
+    {#if promoBanner}
+        <div class="fixed top-4 left-4 right-4 z-[200] max-w-md mx-auto" transition:fly={{ y: -20, duration: 300 }}>
+            <div class="bg-green-600 text-white text-sm font-bold px-5 py-4 rounded-2xl shadow-xl shadow-green-200/50 flex items-center gap-3">
+                <span class="text-lg">{promoBanner.message}</span>
+            </div>
+        </div>
+    {/if}
     {@render children()}
 {/if}

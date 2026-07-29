@@ -2,220 +2,251 @@
     import { onMount } from 'svelte';
     import { appState } from '$lib/stores/appState.svelte.js';
     import { premiumStore } from '$lib/stores/premiumStore.svelte.js';
-    import { i18n } from '$lib/stores/i18nStore.svelte.js';
-    import { fade, slide, fly } from 'svelte/transition';
+    import { goto } from '$app/navigation';
+    import { fade, scale, slide } from 'svelte/transition';
     import { 
-        Plus, Calendar as CalendarIcon, History as HistoryIcon, 
-        LayoutGrid, Settings, Share2, Sparkles, Gift, BookOpen, Heart,
-        Smartphone, ChevronRight
+        ShieldCheck, Sparkles, Zap, Lock, Heart, 
+        ChevronRight, Star, Check, Smartphone, ExternalLink, ArrowRight
     } from '@lucide/svelte';
 
-    // Components
-    import Calendar from '$lib/components/Calendar.svelte';
-    import History from '$lib/components/History.svelte';
-    import Insights from '$lib/components/Insights.svelte';
-    import Onboarding from '$lib/components/Onboarding.svelte';
-    import Paywall from '$lib/components/Paywall.svelte';
-    import SettingsView from '$lib/components/Settings.svelte';
-    import InviteView from '$lib/components/Invite.svelte';
-    import SafeShareView from '$lib/components/SafeShare.svelte';
-    import FoundersLetterModal from '$lib/components/FoundersLetterModal.svelte';
-    import Guides from '$lib/components/Guides.svelte';
-    import AnalyticsPrompt from '$lib/components/AnalyticsPrompt.svelte';
-    import InstallApp from '$lib/components/InstallApp.svelte';
+    let promoCode = $state('');
+    let promoLoading = $state(false);
+    let promoError = $state('');
+    let promoSuccess = $state('');
+    let showPromoInput = $state(false);
+    let loading = $state(true);
 
-    let activeTab = $state('calendar');
-    let showPaywall = $state(false);
-    let showSettings = $state(false);
-    let showInvite = $state(false);
-    let showSafeShare = $state(false);
-    let showGuides = $state(false);
-    let showAnalyticsPrompt = $state(false);
-    let showInstallApp = $state(false);
-    let isStandalone = $state(false);
+    const features = [
+        { icon: ShieldCheck, title: 'Zero Data Collection', desc: 'All health data stays on your device. No servers, no accounts, no data brokers. Ever.' },
+        { icon: Zap, title: 'Accurate Predictions', desc: 'AI-powered cycle forecasting with 95%+ accuracy. Predicts periods, ovulation, and fertile windows.' },
+        { icon: Lock, title: 'Subpoena-Proof', desc: 'No cloud sync means no data to subpoena. Your private health data is truly yours alone.' },
+        { icon: Smartphone, title: 'Works Everywhere', desc: 'PWA on web, Android app on Google Play, and iOS coming soon. Your data syncs across none of them.' },
+    ];
+
+    const VALID_CODE_PREFIX = 'CS-GOLD-';
 
     onMount(async () => {
         await appState.init();
         await premiumStore.init();
-        i18n.init();
-
-        isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-        if (appState.settings.onboarded && !appState.settings.analyticsPromptShown) {
-            showAnalyticsPrompt = true;
-        }
+        loading = false;
     });
 
-    async function closeAnalyticsPrompt() {
-        showAnalyticsPrompt = false;
-        await appState.updateSetting('analyticsPromptShown', true);
+    function isCodeValid(code) {
+        const trimmed = code.trim().toUpperCase();
+        if (!trimmed.startsWith(VALID_CODE_PREFIX)) return false;
+        const numStr = trimmed.replace(VALID_CODE_PREFIX, '');
+        const num = parseInt(numStr, 10);
+        if (isNaN(num)) return false;
+        return num >= 1 && num <= 290;
     }
 
-    function handleLogPeriod() {
-        // Logic to log today as start of period
-        const today = new Date().toISOString().split('T')[0];
-        appState.addCycle({
-            periodStart: today,
-            periodEnd: today // Will be updated later
-        });
-        activeTab = 'calendar';
+    async function handlePromoRedemption() {
+        promoError = '';
+        promoSuccess = '';
+        if (!promoCode.trim()) { promoError = 'Please enter a promo code'; return; }
+        if (!isCodeValid(promoCode)) { promoError = 'Invalid promo code. Valid format: CS-GOLD-XXX (001-290)'; return; }
+        promoLoading = true;
+        try {
+            const expiresAt = new Date();
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+            await appState.updateSetting('goldKey', {
+                code: promoCode.trim().toUpperCase(),
+                expiresAt: expiresAt.toISOString(),
+                redeemedAt: new Date().toISOString()
+            });
+            await premiumStore.refreshStatus();
+            promoSuccess = '🎉 Gold Key activated! You now have premium access for 1 year.';
+            setTimeout(() => { goto('/app'); }, 1500);
+        } catch (e) {
+            promoError = 'Failed to redeem code. Please try again.';
+        } finally { promoLoading = false; }
+    }
+
+    function handleGoldKeyPurchase() {
+        window.location.href = 'https://buy.stripe.com/4gM00jg3f3OxeFk2to0ZW07';
+    }
+
+    function enterApp() {
+        goto('/app');
     }
 </script>
 
-{#if !premiumStore.isPremium}
-    <!-- Mandatory Paywall — user must purchase to proceed -->
-    <Paywall onclose={() => {}} dismissable={false} />
-{:else if !appState.settings.onboarded}
-    <Onboarding />
+{#if loading}
+    <div class="min-h-screen bg-purple-50 flex items-center justify-center">
+        <div class="w-12 h-12 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin"></div>
+    </div>
 {:else}
-    <div class="min-h-screen bg-white pb-32 font-sans">
-        <!-- Header -->
-        <header class="flex items-center justify-between px-6 pt-12 pb-4">
+    <!-- Hero Section -->
+    <div class="min-h-screen bg-gradient-to-b from-purple-50 via-white to-white">
+        <!-- Navigation -->
+        <nav class="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200">
+                <div class="w-9 h-9 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200">
                     <Heart class="w-5 h-5 text-white fill-white" />
                 </div>
-                <div>
-                    <h1 class="text-xl font-black text-gray-900 tracking-tight">CycleSense</h1>
-                    <p class="text-[9px] font-bold uppercase tracking-wider text-purple-400">Independent · Private · Local-First</p>
-                </div>
+                <span class="text-lg font-black text-gray-900 tracking-tight">CycleSense</span>
             </div>
-            <div class="flex items-center gap-2">
-                <button 
-                    onclick={() => showInvite = true}
-                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm border border-purple-50 hover:text-purple-600 transition-all"
-                >
-                    <Share2 class="w-5 h-5" />
+            <div class="flex items-center gap-3">
+                <button onclick={enterApp}
+                    class="text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors px-4 py-2">
+                    Sign In
                 </button>
-                <button 
-                    onclick={() => showSettings = true}
-                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-400 shadow-sm border border-purple-50 hover:text-purple-600 transition-all"
-                >
-                    <Settings class="w-5 h-5" />
-                </button>
-            </div>
-        </header>
-
-        {#if !isStandalone}
-            <div class="mx-6 mb-6 p-6 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[32px] shadow-lg text-white overflow-hidden relative group cursor-pointer transition-transform active:scale-[0.98]" onclick={() => showInstallApp = true}>
-                <div class="relative z-10">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center">
-                                <Smartphone class="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-black tracking-tight">Install CycleSense</h3>
-                                <p class="text-[10px] text-purple-100 font-medium">Get the full experience</p>
-                            </div>
-                        </div>
-                        <ChevronRight class="w-5 h-5 text-white/50 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                    <p class="text-xs text-purple-50/80 leading-relaxed">
-                        Add to home screen for better performance and enhanced privacy.
-                    </p>
-                </div>
-                <!-- Decorative blobs -->
-                <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700"></div>
-                <div class="absolute -left-6 -bottom-6 w-24 h-24 bg-indigo-400/20 rounded-full blur-2xl group-hover:translate-x-4 transition-transform duration-700"></div>
-            </div>
-        {/if}
-
-                    {#if !premiumStore.isPremium && appState.isScarcityActive}
-            <div class="mx-6 mb-6 p-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-[32px] text-white shadow-lg shadow-purple-100 flex items-center justify-between overflow-hidden relative group cursor-pointer" onclick={() => showPaywall = true}>
-                <div class="relative z-10">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="bg-white/20 backdrop-blur-sm text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">Independent Launch</span>
-                        <span class="text-[10px] font-medium text-purple-100 italic">{appState.goldKeysRemaining} Gold Keys left!</span>
-                    </div>
-                    <h3 class="text-lg font-black leading-tight">Fund Our Native Launch</h3>
-                    <p class="text-xs text-purple-100 font-medium">Gold Key purchases ($19.99/yr) go directly toward Apple + Google store fees ($124 goal).</p>
-                </div>
-                <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-md z-10 group-hover:scale-110 transition-transform">
-                    <Sparkles class="w-6 h-6 text-white fill-white" />
-                </div>
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                <div class="absolute -left-4 -bottom-4 w-16 h-16 bg-indigo-400/20 rounded-full blur-xl group-hover:translate-x-10 transition-transform duration-700"></div>
-            </div>
-        {/if}
-
-        <main class="px-6 space-y-6">
-            {#if activeTab === 'calendar'}
-                <Calendar onsafeshare={() => showSafeShare = true} />
-            {:else if activeTab === 'history'}
-                <History />
-            {:else}
-                <Insights
-                    onrequestupgrade={() => showPaywall = true}
-                    onsafeshare={() => showSafeShare = true}
-                />
-            {/if}
-        </main>
-
-        {#if showPaywall}
-            <Paywall onclose={() => showPaywall = false} />
-        {/if}
-        {#if showSettings}
-            <SettingsView onclose={() => showSettings = false} />
-        {/if}
-        {#if showInvite}
-            <InviteView onclose={() => showInvite = false} />
-        {/if}
-        {#if showSafeShare}
-            <SafeShareView onclose={() => showSafeShare = false} />
-        {/if}
-        {#if showGuides}
-            <Guides onclose={() => showGuides = false} />
-        {/if}
-
-        {#if showAnalyticsPrompt}
-            <AnalyticsPrompt onclose={closeAnalyticsPrompt} />
-        {/if}
-
-        <FoundersLetterModal onopenshare={() => showSafeShare = true} />
-
-        {#if showInstallApp}
-            <InstallApp onclose={() => showInstallApp = false} />
-        {/if}
-
-        <!-- Navigation Bar -->
-        <nav class="fixed bottom-0 left-0 right-0 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] bg-transparent pointer-events-none">
-            <div class="max-w-md mx-auto bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 p-2 flex items-center justify-between pointer-events-auto">
-                <button
-                    onclick={() => activeTab = 'calendar'}
-                    class="flex-1 flex flex-col items-center py-2 transition-all {activeTab === 'calendar' ? 'text-purple-600' : 'text-gray-400'}"
-                >
-                    <CalendarIcon class="w-5 h-5 mb-1" />
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">{i18n.t('calendar')}</span>
-                </button>
-                <button
-                    onclick={() => activeTab = 'history'}
-                    class="flex-1 flex flex-col items-center py-2 transition-all {activeTab === 'history' ? 'text-purple-600' : 'text-gray-400'}"
-                >
-                    <HistoryIcon class="w-5 h-5 mb-1" />
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">{i18n.t('history')}</span>
-                </button>
-                <button
-                    onclick={handleLogPeriod}
-                    class="w-12 h-12 bg-purple-600 rounded-2xl shadow-lg shadow-purple-200 flex items-center justify-center -mt-6 hover:bg-purple-700 active:scale-95 transition-all group mx-1"
-                >
-                    <Plus class="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-300" />
-                </button>
-                <button
-                    onclick={() => activeTab = 'insights'}
-                    class="flex-1 flex flex-col items-center py-2 transition-all {activeTab === 'insights' ? 'text-purple-600' : 'text-gray-400'}"
-                >
-                    <LayoutGrid class="w-5 h-5 mb-1" />
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">{i18n.t('insights')}</span>
-                </button>
-                <button
-                    onclick={() => showGuides = true}
-                    class="flex-1 flex flex-col items-center py-2 transition-all {showGuides ? 'text-purple-600' : 'text-gray-400'}"
-                >
-                    <BookOpen class="w-5 h-5 mb-1" />
-                    <span class="text-[9px] font-bold uppercase tracking-tighter">{i18n.t('guides')}</span>
+                <button onclick={handleGoldKeyPurchase}
+                    class="bg-purple-600 text-white text-sm font-bold px-5 py-2.5 rounded-2xl hover:bg-purple-700 active:scale-95 transition-all shadow-lg shadow-purple-200 flex items-center gap-1.5">
+                    <Sparkles class="w-4 h-4" /> Get Gold Key
                 </button>
             </div>
         </nav>
+
+        <!-- Hero -->
+        <section class="px-6 pt-16 pb-20 max-w-5xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 bg-purple-50 border border-purple-200 rounded-full px-4 py-1.5 mb-8">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">No servers. No accounts. No data collection.</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-6xl font-black text-gray-900 leading-[1.1] tracking-tight mb-6">
+                Private Period &<br />
+                Ovulation Tracking
+            </h1>
+            <p class="text-xl text-gray-500 font-medium mb-4 max-w-xl mx-auto leading-relaxed">
+                <span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded-lg font-bold">Zero data collection.</span>
+                Period.
+            </p>
+            <p class="text-base text-gray-400 mb-10 max-w-lg mx-auto">
+                The only period tracker that stores everything on your device. No accounts, no cloud, no data brokers. Just accurate cycle predictions and complete privacy.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+                <button onclick={handleGoldKeyPurchase}
+                    class="bg-purple-600 text-white text-lg font-black px-8 py-4 rounded-[20px] hover:bg-purple-700 active:scale-95 transition-all shadow-xl shadow-purple-200/50 flex items-center gap-2">
+                    <Sparkles class="w-5 h-5" /> Buy Gold Key — $19.99/yr
+                    <ArrowRight class="w-5 h-5" />
+                </button>
+                <button onclick={enterApp}
+                    class="text-gray-500 font-bold text-sm hover:text-gray-800 transition-colors underline underline-offset-4">
+                    Already a member? Enter the app →
+                </button>
+            </div>
+
+            <!-- Promo Code -->
+            <div class="max-w-sm mx-auto">
+                {#if !showPromoInput}
+                    <button onclick={() => showPromoInput = true}
+                        class="text-xs text-purple-500 font-bold hover:text-purple-700 transition-colors">
+                        Have a promo code? Click to redeem
+                    </button>
+                {:else}
+                    <div class="space-y-3 bg-purple-50/50 rounded-[24px] p-4 border border-purple-100" transition:slide>
+                        <h4 class="text-xs font-black uppercase tracking-widest text-purple-400">Redeem Gold Key Code</h4>
+                        <div class="flex gap-2">
+                            <input type="text" bind:value={promoCode}
+                                placeholder="e.g. CS-GOLD-221"
+                                class="flex-1 px-4 py-3 rounded-2xl border-2 border-purple-200 bg-white text-sm font-medium text-gray-900 placeholder-gray-300 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
+                                disabled={promoLoading} />
+                            <button onclick={handlePromoRedemption} disabled={promoLoading}
+                                class="px-5 py-3 bg-purple-600 text-white font-bold text-sm rounded-2xl hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-50 flex items-center gap-1">
+                                Redeem
+                            </button>
+                        </div>
+                        {#if promoError}
+                            <p class="text-red-500 text-xs font-bold bg-red-50 p-2 rounded-xl" transition:slide>{promoError}</p>
+                        {/if}
+                        {#if promoSuccess}
+                            <p class="text-green-600 text-xs font-bold bg-green-50 p-3 rounded-xl" transition:slide>{promoSuccess}</p>
+                        {/if}
+                        <button onclick={() => { showPromoInput = false; promoError = ''; promoSuccess = ''; }}
+                            class="text-[10px] text-gray-400 font-bold hover:text-gray-600 underline">Cancel</button>
+                    </div>
+                {/if}
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section class="px-6 py-20 max-w-5xl mx-auto">
+            <h2 class="text-3xl font-black text-center text-gray-900 mb-4">Why CycleSense?</h2>
+            <p class="text-gray-500 text-center mb-12 max-w-md mx-auto">Every feature is designed with one thing in mind: your privacy.</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                {#each features as feature}
+                    <div class="p-8 rounded-[32px] bg-gray-50/50 border border-gray-100 hover:border-purple-200 hover:bg-purple-50/30 transition-all group">
+                        <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-purple-200 transition-colors">
+                            <feature.icon class="w-6 h-6 text-purple-600" />
+                        </div>
+                        <h3 class="text-lg font-black text-gray-900 mb-2">{feature.title}</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">{feature.desc}</p>
+                    </div>
+                {/each}
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section class="px-6 py-20 max-w-lg mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-black text-gray-900 mb-3">Choose Your Key</h2>
+                <p class="text-gray-500 text-sm">Unlock full cycle insights and stay ahead of your health.</p>
+            </div>
+
+            <div class="bg-white rounded-[32px] border-2 border-purple-600 p-8 shadow-xl shadow-purple-100/50 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <span class="text-xs font-black uppercase tracking-widest text-purple-600">Gold Key Founder</span>
+                            <div class="flex items-baseline gap-1 mt-2">
+                                <span class="text-4xl font-black text-gray-900">$19.99</span>
+                                <span class="text-gray-400 text-sm font-medium">/ year</span>
+                            </div>
+                        </div>
+                        <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center">
+                            <Star class="w-7 h-7 text-purple-600 fill-purple-600" />
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        {#each ['6-Month cycle forecasting', 'Advanced cycle analysis charts', 'Detailed symptom patterns', 'Priority prediction algorithm', 'Ad-free experience', 'Exclusive Gold Key Badge'] as feature}
+                            <li class="flex items-center gap-3 text-sm text-gray-700">
+                                <div class="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center shrink-0">
+                                    <Check class="w-3 h-3 text-purple-600 stroke-[3]" />
+                                </div>
+                                {feature}
+                            </li>
+                        {/each}
+                    </ul>
+
+                    <button onclick={handleGoldKeyPurchase}
+                        class="w-full bg-purple-600 text-white font-black text-base px-6 py-4 rounded-[20px] hover:bg-purple-700 active:scale-[0.98] transition-all shadow-lg shadow-purple-200/50 flex items-center justify-center gap-2">
+                        <Sparkles class="w-5 h-5" /> Get Gold Key — $19.99/yr
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy Badge Section -->
+        <section class="px-6 py-16 max-w-3xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-5 py-2 mb-6">
+                <ShieldCheck class="w-4 h-4 text-green-600" />
+                <span class="text-xs font-bold text-green-700 uppercase tracking-wider">Your data never leaves your device</span>
+            </div>
+            <p class="text-gray-500 text-sm max-w-lg mx-auto leading-relaxed">
+                CycleSense stores all health data locally on your device using IndexedDB. 
+                There are no servers, no cloud backups, no data brokers, and no third-party analytics. 
+                Even we can't access your data — because we don't collect any.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="px-6 py-10 border-t border-gray-100">
+            <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <Heart class="w-4 h-4 text-purple-400 fill-purple-200" />
+                    <span class="text-sm font-bold text-gray-400">CycleSense</span>
+                </div>
+                <div class="flex items-center gap-6 text-xs text-gray-400 font-medium">
+                    <a href="/privacy" class="hover:text-gray-600 transition-colors">Privacy Policy</a>
+                    <span>© 2026 CycleSense</span>
+                </div>
+            </div>
+        </footer>
     </div>
 {/if}
